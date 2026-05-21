@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { pullGacha, calcProbability } from '@/lib/gacha'
-import type { Gacha, GachaItem } from '@/lib/supabase'
+import type { Gacha, GachaItem } from '@/lib/sheets'
 
 type Props = {
   gacha: Gacha
@@ -61,7 +61,6 @@ export default function GachaPlayer({ gacha, items, isNew }: Props) {
               className="w-48 h-48 rounded-3xl flex flex-col items-center justify-center shadow-2xl animate-spin-gacha"
               style={{
                 background: `radial-gradient(circle at 30% 30%, ${result.color}88, ${result.color}22)`,
-                borderColor: result.color,
                 border: `2px solid ${result.color}`,
               }}
             >

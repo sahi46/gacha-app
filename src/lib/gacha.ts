@@ -1,4 +1,4 @@
-import type { GachaItem } from './supabase'
+import type { GachaItem } from './sheets'
 
 export function pullGacha(items: GachaItem[]): GachaItem {
   const totalWeight = items.reduce((sum, item) => sum + item.weight, 0)

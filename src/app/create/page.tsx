@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createGacha } from '@/lib/sheets'
 import { calcProbability } from '@/lib/gacha'
 import { nanoid } from 'nanoid'
 
@@ -68,32 +68,17 @@ export default function CreatePage() {
     setError('')
 
     const shareId = nanoid(8)
+    const result = await createGacha({
+      shareId,
+      name: gachaName.trim(),
+      description: description.trim(),
+      items: items.map(({ name, weight, color, emoji, rarity_label }) => ({
+        name, weight, color, emoji, rarity_label,
+      })),
+    })
 
-    const { data: gacha, error: gachaErr } = await supabase
-      .from('gachas')
-      .insert({ name: gachaName.trim(), description: description.trim() || null, share_id: shareId })
-      .select()
-      .single()
-
-    if (gachaErr || !gacha) {
-      setError('作成に失敗しました: ' + (gachaErr?.message ?? ''))
-      setLoading(false)
-      return
-    }
-
-    const itemRows = items.map((i) => ({
-      gacha_id: gacha.id,
-      name: i.name.trim(),
-      weight: i.weight,
-      color: i.color,
-      emoji: i.emoji,
-      rarity_label: i.rarity_label,
-    }))
-
-    const { error: itemsErr } = await supabase.from('gacha_items').insert(itemRows)
-
-    if (itemsErr) {
-      setError('アイテム保存に失敗: ' + itemsErr.message)
+    if (!result.success) {
+      setError('作成に失敗しました: ' + (result.error ?? ''))
       setLoading(false)
       return
     }
