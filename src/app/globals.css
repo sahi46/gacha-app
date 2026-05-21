@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
-body {
+html, body {
   font-family: 'Hiragino Sans', 'Noto Sans JP', Arial, sans-serif;
   background: #0f0a1e;
   color: #f0e6ff;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 @keyframes spin-gacha {

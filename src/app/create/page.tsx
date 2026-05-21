@@ -52,9 +52,7 @@ export default function CreatePage() {
   function applyPreset(id: string, preset: typeof PRESET_RARITIES[number]) {
     setItems((prev) =>
       prev.map((i) =>
-        i.id === id
-          ? { ...i, rarity_label: preset.label, weight: preset.weight, color: preset.color }
-          : i
+        i.id === id ? { ...i, rarity_label: preset.label, weight: preset.weight, color: preset.color } : i
       )
     )
   }
@@ -87,117 +85,113 @@ export default function CreatePage() {
   }
 
   return (
-    <main className="min-h-screen px-4 py-10 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-2 text-purple-300">🎲 ガチャを作る</h1>
-      <p className="text-purple-500 text-sm mb-8">アイテムと確率を設定して、URLをシェアしよう</p>
+    <main className="min-h-screen px-4 py-8 max-w-lg mx-auto">
+      <h1 className="text-2xl font-bold mb-1 text-purple-300">🎲 ガチャを作る</h1>
+      <p className="text-purple-500 text-sm mb-6">アイテムと確率を設定してシェアしよう</p>
 
-      <section className="mb-8 space-y-4">
-        <div>
-          <label className="block text-sm text-purple-300 mb-1">ガチャ名 *</label>
-          <input
-            value={gachaName}
-            onChange={(e) => setGachaName(e.target.value)}
-            placeholder="例: 推しキャラガチャ"
-            className="w-full px-4 py-3 rounded-xl bg-purple-950/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none focus:border-purple-400"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-purple-300 mb-1">説明（任意）</label>
-          <input
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="例: ハーフアニバーサリー記念！"
-            className="w-full px-4 py-3 rounded-xl bg-purple-950/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none focus:border-purple-400"
-          />
-        </div>
-      </section>
+      {/* 基本情報 */}
+      <div className="space-y-3 mb-6">
+        <input
+          value={gachaName}
+          onChange={(e) => setGachaName(e.target.value)}
+          placeholder="ガチャ名（例: 推しキャラガチャ）"
+          className="w-full px-4 py-3 rounded-xl bg-purple-950/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none focus:border-purple-400 text-base"
+        />
+        <input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="説明（任意）"
+          className="w-full px-4 py-3 rounded-xl bg-purple-950/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none focus:border-purple-400 text-base"
+        />
+      </div>
 
-      <section className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-purple-300">アイテム一覧</h2>
-          <button
-            onClick={addItem}
-            className="px-4 py-1.5 text-sm rounded-full bg-purple-800 hover:bg-purple-700 text-white transition-colors"
-          >
-            ＋ 追加
-          </button>
-        </div>
+      {/* アイテム */}
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-base font-semibold text-purple-300">アイテム</h2>
+        <button
+          onClick={addItem}
+          className="px-4 py-1.5 text-sm rounded-full bg-purple-800 active:bg-purple-700 text-white"
+        >
+          ＋ 追加
+        </button>
+      </div>
 
-        <div className="space-y-3">
-          {items.map((item) => {
-            const prob = calcProbability(item.weight, items)
-            return (
-              <div key={item.id} className="p-4 rounded-2xl bg-purple-950/40 border border-purple-800">
-                <div className="flex gap-2 mb-3">
+      <div className="space-y-3 mb-6">
+        {items.map((item) => {
+          const prob = calcProbability(item.weight, items)
+          return (
+            <div key={item.id} className="p-3 rounded-2xl bg-purple-950/40 border border-purple-800">
+              {/* 1行目: 絵文字・名前・削除 */}
+              <div className="flex gap-2 mb-2">
+                <input
+                  value={item.emoji}
+                  onChange={(e) => updateItem(item.id, 'emoji', e.target.value)}
+                  className="w-12 text-center px-1 py-2 rounded-lg bg-purple-900/50 border border-purple-700 text-white focus:outline-none text-lg"
+                />
+                <input
+                  value={item.name}
+                  onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                  placeholder="アイテム名"
+                  className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-purple-900/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none focus:border-purple-400"
+                />
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="px-2 py-2 rounded-lg text-purple-500 active:text-red-400"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* 2行目: レア度・重み・確率 */}
+              <div className="flex gap-2 mb-2">
+                <input
+                  value={item.rarity_label}
+                  onChange={(e) => updateItem(item.id, 'rarity_label', e.target.value)}
+                  placeholder="レア度"
+                  className="w-20 text-center px-2 py-1.5 rounded-lg bg-purple-900/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none text-sm"
+                />
+                <div className="flex items-center gap-1.5 flex-1">
+                  <span className="text-xs text-purple-400 shrink-0">重み</span>
                   <input
-                    value={item.emoji}
-                    onChange={(e) => updateItem(item.id, 'emoji', e.target.value)}
-                    className="w-14 text-center px-2 py-2 rounded-lg bg-purple-900/50 border border-purple-700 text-white focus:outline-none"
-                    placeholder="🌟"
+                    type="number"
+                    min={1}
+                    value={item.weight}
+                    onChange={(e) => updateItem(item.id, 'weight', Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-14 text-center px-2 py-1.5 rounded-lg bg-purple-900/50 border border-purple-700 text-white focus:outline-none text-sm"
                   />
-                  <input
-                    value={item.name}
-                    onChange={(e) => updateItem(item.id, 'name', e.target.value)}
-                    placeholder="アイテム名"
-                    className="flex-1 px-3 py-2 rounded-lg bg-purple-900/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none focus:border-purple-400"
-                  />
-                  <input
-                    value={item.rarity_label}
-                    onChange={(e) => updateItem(item.id, 'rarity_label', e.target.value)}
-                    placeholder="レア度"
-                    className="w-20 text-center px-2 py-2 rounded-lg bg-purple-900/50 border border-purple-700 text-white placeholder-purple-600 focus:outline-none text-sm"
-                  />
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="px-3 py-2 rounded-lg text-purple-500 hover:text-red-400 hover:bg-red-900/20 transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="flex gap-2 items-center flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-purple-400">重み:</span>
-                    <input
-                      type="number"
-                      min={1}
-                      value={item.weight}
-                      onChange={(e) => updateItem(item.id, 'weight', Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-16 text-center px-2 py-1 rounded-lg bg-purple-900/50 border border-purple-700 text-white focus:outline-none text-sm"
-                    />
-                    <span className="text-xs text-yellow-400 font-bold">{prob.toFixed(1)}%</span>
-                  </div>
-
-                  <div className="flex gap-1 ml-auto">
-                    {COLORS.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => updateItem(item.id, 'color', c)}
-                        className={`w-6 h-6 rounded-full transition-transform ${item.color === c ? 'scale-125 ring-2 ring-white' : ''}`}
-                        style={{ background: c }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex gap-1 mt-2">
-                  {PRESET_RARITIES.map((p) => (
-                    <button
-                      key={p.label}
-                      onClick={() => applyPreset(item.id, p)}
-                      className="px-2 py-0.5 text-xs rounded-full border transition-colors hover:brightness-125"
-                      style={{ borderColor: p.color, color: p.color }}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                  <span className="text-xs text-purple-600 ml-1 self-center">← プリセット</span>
+                  <span className="text-sm text-yellow-400 font-bold">{prob.toFixed(1)}%</span>
                 </div>
               </div>
-            )
-          })}
-        </div>
-      </section>
+
+              {/* 3行目: カラー */}
+              <div className="flex gap-1.5 flex-wrap mb-2">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => updateItem(item.id, 'color', c)}
+                    className={`w-7 h-7 rounded-full transition-transform ${item.color === c ? 'scale-125 ring-2 ring-white' : ''}`}
+                    style={{ background: c }}
+                  />
+                ))}
+              </div>
+
+              {/* 4行目: プリセット */}
+              <div className="flex gap-1.5 flex-wrap">
+                {PRESET_RARITIES.map((p) => (
+                  <button
+                    key={p.label}
+                    onClick={() => applyPreset(item.id, p)}
+                    className="px-2.5 py-0.5 text-xs rounded-full border"
+                    style={{ borderColor: p.color, color: p.color }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
 
       {error && (
         <p className="mb-4 px-4 py-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
@@ -208,9 +202,9 @@ export default function CreatePage() {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full py-4 rounded-full text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 text-white transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-900"
+        className="w-full py-4 rounded-2xl text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 disabled:opacity-50 text-white shadow-lg shadow-purple-900 active:scale-95 transition-transform"
       >
-        {loading ? '作成中...' : '✨ ガチャを作成してシェア！'}
+        {loading ? '作成中...' : '✨ 作成してシェア！'}
       </button>
     </main>
   )
